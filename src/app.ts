@@ -33,10 +33,25 @@ class ProjectInput {
     this.configure();
     this.attach();
   }
+  private gatherUserInput(): [string, string, number] | void {
+    const enteredTitle = this.titleInputElement.value;
+    const enteredDescription = this.descriptionInputElement.value;
+    const enteredManday = this.mandayInputElement.value;
 
+    if (
+      enteredTitle.trim().length === 0 ||
+      enteredDescription.trim().length === 0 ||
+      enteredManday.trim().length === 0
+    ) {
+      alert("入力値が正しくありません");
+    } else {
+      return [enteredTitle, enteredDescription, +enteredManday];
+    }
+  }
   private submitHandler = (event: Event) => {
     event.preventDefault();
     console.log(this.titleInputElement.value);
+    const userInput = this.gatherUserInput();
   };
 
   private configure() {
