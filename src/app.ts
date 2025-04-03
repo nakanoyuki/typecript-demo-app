@@ -1,3 +1,31 @@
+interface Validatable {
+  value: string | number;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+}
+
+function validate(validateInput: Validatable) {
+  let isValid = true;
+  if (validateInput.required) {
+    isValid == isValid && validateInput.value?.toString().trim().length !== 0;
+  }
+  if (validateInput.minLength && typeof validateInput.value == "string") {
+    isValid == isValid && validateInput.value.length >= validateInput.minLength;
+  }
+  if (validateInput.maxLength && typeof validateInput.value == "string") {
+    isValid == isValid && validateInput.value.length <= validateInput.maxLength;
+  }
+  if (validateInput.min && typeof validateInput.value == "number") {
+    isValid = isValid && validateInput.value >= validateInput.min;
+  }
+  if (validateInput.max && typeof validateInput.value == "number") {
+    isValid = isValid && validateInput.value <= validateInput.max;
+  }
+  return isValid;
+}
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
@@ -37,21 +65,45 @@ class ProjectInput {
     const enteredTitle = this.titleInputElement.value;
     const enteredDescription = this.descriptionInputElement.value;
     const enteredManday = this.mandayInputElement.value;
-
+    const titleValidatable: Validatable = {
+      value: enteredTitle,
+      required: true,
+    };
+    const descriptionValidatable: Validatable = {
+      value: enteredDescription,
+      required: true,
+      maxLength: 5,
+    };
+    const mandayValidatable: Validatable = {
+      value: +enteredManday,
+      required: true,
+      min: 4,
+      max: 1000,
+    };
     if (
-      enteredTitle.trim().length === 0 ||
-      enteredDescription.trim().length === 0 ||
-      enteredManday.trim().length === 0
+      !validate(titleValidatable) ||
+      !validate(descriptionValidatable) ||
+      !validate(mandayValidatable)
     ) {
       alert("入力値が正しくありません");
     } else {
       return [enteredTitle, enteredDescription, +enteredManday];
     }
   }
+
+  private clearInput() {
+    this.titleInputElement.value = "";
+    this.descriptionInputElement.value = "";
+    this.mandayInputElement.value = "";
+  }
   private submitHandler = (event: Event) => {
     event.preventDefault();
-    console.log(this.titleInputElement.value);
     const userInput = this.gatherUserInput();
+    if (Array.isArray(userInput)) {
+      const [title, desc, manday] = userInput;
+      console.log(title, desc, manday);
+      this.clearInput();
+    }
   };
 
   private configure() {
